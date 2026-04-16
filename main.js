@@ -28,14 +28,9 @@ if (process.platform === 'win32') {
 }
 
 app.whenReady().then(() => {
-<<<<<<< HEAD
-  // Don't show in taskbar — tray only
-  app.dock && app.dock.hide();
-=======
   app.dock && app.dock.hide();
   // Seed lastClipboard with current contents so we don't alert on pre-existing clipboard
   try { lastClipboard = clipboard.readText() || ''; } catch(e) {}
->>>>>>> 15bbb54 (Fix tab navigation and test function - remove stray closing brace blocking all JS)
   createTray();
   createMainWindow();
   startClipboardMonitor();
@@ -155,12 +150,7 @@ function createMainWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-<<<<<<< HEAD
-      preload: path.join(__dirname, 'preload.js'),
-      partition: 'persist:shield'
-=======
       preload: path.join(__dirname, 'preload.js')
->>>>>>> 15bbb54 (Fix tab navigation and test function - remove stray closing brace blocking all JS)
     }
   });
   mainWindow.loadFile('src/index.html');
@@ -258,11 +248,6 @@ function toggleMonitoring() {
 // ─── Test Function ────────────────────────────────────────────────────────────
 
 function runTest() {
-<<<<<<< HEAD
-  // Realistic but subtle test message — not obvious
-  const testMsg = `Hi, this is the Account Review Team at your financial institution. We've detected some irregular activity on your account ending in 4821 that requires your attention. For your security, your online access has been temporarily restricted. To restore full access, please verify your identity using the link below within the next 24 hours — failure to do so may result in your account being permanently suspended. Please do not contact your local branch as this is handled exclusively by our online security department. https://secure-account-verify.com/restore`;
-  clipboard.writeText(testMsg);
-=======
   const testMsg = `Hi, this is the Account Review Team at your financial institution. We've detected some irregular activity on your account ending in 4821 that requires your attention. For your security, your online access has been temporarily restricted. To restore full access, please verify your identity using the link below within the next 24 hours — failure to do so may result in your account being permanently suspended. Please do not contact your local branch as this is handled exclusively by our online security department. https://secure-account-verify.com/restore`;
 
   // Pause monitor briefly so writing the test message doesn't self-trigger
@@ -280,7 +265,6 @@ function runTest() {
       mainWindow.webContents.send('refresh-alerts', alertHistory);
     }
   }
->>>>>>> 15bbb54 (Fix tab navigation and test function - remove stray closing brace blocking all JS)
 }
 
 // ─── IPC ──────────────────────────────────────────────────────────────────────
