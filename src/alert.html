@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shield Alert</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d1a;--bg2:#131326;--bg3:#1a1a30;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text2:#8888aa;--text3:#555570;
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--orange:#f97316;--accent:#4f8ef7;
+}
+html,body{height:100%;background:transparent;color:var(--text);font-family:-apple-system,'Segoe UI',sans-serif;font-size:13px}
+#alert-card{background:#0d0d1a;border:1px solid var(--border2);border-radius:12px;padding:16px;height:100%;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+#alert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--risk-color)}
+.alert-header{display:flex;align-items:center;justify-content:space-between}
+.alert-brand{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
+.close-btn{width:20px;height:20px;border:none;background:transparent;color:var(--text3);cursor:pointer;border-radius:4px;font-size:14px;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+.risk-label{font-size:16px;font-weight:500;color:var(--risk-color)}
+.risk-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.snippet{background:var(--bg2);border-radius:6px;padding:8px 10px;font-size:11px;font-family:monospace;color:var(--text2);white-space:pre-wrap;word-break:break-all;max-height:52px;overflow:hidden;line-height:1.5}
+.cats{display:flex;gap:5px;flex-wrap:wrap}
+.cat{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.06);color:var(--text2)}
+.actions{display:flex;gap:6px;margin-top:auto}
+.btn{flex:1;padding:7px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text);text-align:center}
+.btn:hover{background:rgba(255,255,255,0.06)}
+.btn-dismiss{color:var(--text3)}
+.progress{position:absolute;bottom:0;left:0;height:2px;background:var(--risk-color);opacity:0.4;animation:shrink 12s linear forwards}
+@keyframes shrink{from{width:100%}to{width:0%}}
+</style>
+</head>
+<body>
+<div id="alert-card">
+  <div class="alert-header">
+    <div class="alert-brand">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="#4f8ef7"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+      Shield
+    </div>
+    <button class="close-btn" onclick="shield.closeAlert()">✕</button>
+  </div>
+  <div>
+    <div class="risk-label" id="risk-label">HIGH RISK</div>
+    <div class="risk-sub" id="risk-sub">Suspicious content detected in clipboard</div>
+  </div>
+  <div class="snippet" id="snippet"></div>
+  <div class="cats" id="cats"></div>
+  <div class="actions">
+    <button class="btn btn-dismiss" onclick="shield.closeAlert()">Dismiss</button>
+    <button class="btn" onclick="shield.closeAlert();/* open main */">View details</button>
+  </div>
+  <div class="progress"></div>
+</div>
+
+<script>
+const CATEGORY_LABELS = {
+  urgency:'Creates urgency', authority:'Impersonates authority', threat:'Uses threats',
+  reward:'Promises reward', payment:'Unusual payment request', credential:'Requests credentials',
+  phishing:'Suspicious link', isolation:'Demands secrecy'
+};
+
+const RISK_COLORS = {
+  critical:'#ef4444', high:'#f97316', medium:'#f59e0b', low:'#84cc16'
+};
+
+const RISK_LABELS = {
+  critical:'CRITICAL — Very likely a scam',
+  high:'HIGH RISK — Strong scam indicators',
+  medium:'MEDIUM RISK — Suspicious patterns',
+  low:'LOW RISK — Some suspicious patterns'
+};
+
+shield.onAlertData((data) => {
+  const color = RISK_COLORS[data.risk] || '#f59e0b';
+  document.documentElement.style.setProperty('--risk-color', color);
+  document.getElementById('risk-label').textContent = RISK_LABELS[data.risk] || data.risk.toUpperCase();
+  document.getElementById('risk-sub').textContent = `${data.reasons.length} indicator${data.reasons.length>1?'s':''} detected`;
+  document.getElementById('snippet').textContent = data.text.substring(0, 180) + (data.text.length > 180 ? '...' : '');
+  const cats = document.getElementById('cats');
+  cats.innerHTML = data.reasons.map(r => `<span class="cat">${CATEGORY_LABELS[r.category] || r.category}</span>`).join('');
+});
+</script>
+</body>
+</html>
